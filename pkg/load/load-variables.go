@@ -37,12 +37,12 @@ func convertType(value string, field reflect.Value) error {
 }
 
 func (r *environment) getFieldName(field *reflect.StructField) string {
-	jsonTag := field.Tag.Get("json")
-	if jsonTag == "" {
+	varTag := field.Tag.Get("var")
+	if varTag == "" {
 		return field.Name
 	}
 
-	return strings.Split(jsonTag, ",")[0]
+	return strings.Split(varTag, ",")[0]
 }
 
 func (r *environment) LoadVariable(result interface{}) error {

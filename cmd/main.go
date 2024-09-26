@@ -7,36 +7,53 @@ import (
 )
 
 type AWS struct {
-	Region string `json:"AWS_REGION"`
-	Secret string `json:"AWS_SECRET_KEY_ID"`
-	Key    string `json:"AWS_SECRET_ACCESS_KEY"`
+	Region string `var:"AWS_REGION"`
+	Secret string `var:"AWS_SECRET_KEY_ID"`
+	Key    string `var:"AWS_SECRET_ACCESS_KEY"`
 }
 
 type Redis struct {
-	Port string `json:"REDIS_PORT"`
-	Host string `json:"REDIS_HOST"`
-	Db   int    `json:"REDIS_DATABASE"`
-	Pass string `json:"REDIS_PASS"`
+	Port string `var:"REDIS_PORT"`
+	Host string `var:"REDIS_HOST"`
+	Db   int    `var:"REDIS_DATABASE"`
+	Pass string `var:"REDIS_PASS"`
 }
 
 type Servers struct {
-	Name   string `json:"Name"`
-	ID     int    `json:"Id"`
-	Port   int    `json:"Port"`
-	Enable bool   `json:"Enable"`
+	Name   string `json:"SERVER_NAME"`
+	ID     int    `json:"SERVER_ID"`
+	Port   int    `json:"SERVER_PORT"`
+	Enable bool   `json:"SERVER_ENABLE"`
 }
 
 func main() {
 	varEnv := load.New("../.env")
 
-	aws := AWS{}
+	var (
+		aws     = AWS{}
+		redis   = Redis{}
+		servers = []Servers{}
+	)
 
-	err := varEnv.LoadVariable(&aws)
+	errs := varEnv.Load(&aws, &redis)
 
-	if err != nil {
-		fmt.Println(err)
+	if len(errs) > 0 {
+		for _, item := range errs {
+			fmt.Printf("Error %s\n", item)
+		}
 	}
 
 	fmt.Printf("%+v\n", aws)
+	fmt.Printf("%v\n", redis)
+
+	err := varEnv.LoadList("SERVERS", &servers)
+
+	if err != nil {
+		fmt.Println("Erro", err)
+	}
+
+	for _, server := range servers {
+		fmt.Printf("%v\n", server)
+	}
 
 }
