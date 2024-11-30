@@ -27,7 +27,12 @@ type Servers struct {
 }
 
 func main() {
-	varEnv := load.New("../.env")
+	varEnv,err := load.New("../.env")
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return
+	}
 
 	var (
 		aws     = AWS{}
@@ -46,7 +51,7 @@ func main() {
 	fmt.Printf("%+v\n", aws)
 	fmt.Printf("%v\n", redis)
 
-	err := varEnv.LoadList("SERVERS", &servers)
+	err = varEnv.LoadList("SERVERS", &servers)
 
 	if err != nil {
 		fmt.Println("Erro", err)

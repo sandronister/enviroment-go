@@ -12,11 +12,11 @@ type environment struct {
 	variables map[string]string
 }
 
-func loadMap(path string) map[string]string {
+func loadMap(path string) (map[string]string,error) {
 	err := godotenv.Load(path)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	envVars := os.Environ()
@@ -27,12 +27,16 @@ func loadMap(path string) map[string]string {
 		variables[tmp[0]] = tmp[1]
 	}
 
-	return variables
+	return variables, nil
 }
 
-func New(path string) types.EnvironmentPorts {
-	variable := loadMap(path)
+func New(path string) (types.EnvironmentPorts,error) {
+	variable,err := loadMap(path)
+	if err != nil {
+		return nil, err
+	}
+	
 	return &environment{
 		variables: variable,
-	}
+	},nil
 }
